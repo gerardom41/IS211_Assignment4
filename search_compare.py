@@ -14,6 +14,7 @@ def get_me_random_list(n):
 
 
 def sequential_search(a_list, item):
+    start = time.time()
     pos = 0
     found = False
 
@@ -23,10 +24,12 @@ def sequential_search(a_list, item):
         else:
             pos = pos + 1
 
-    return found
+    stop = time.time()
+    return found, stop - start
 
 
 def ordered_sequential_search(a_list, item):
+    start = time.time()
     pos = 0
     found = False
     stop = False
@@ -39,10 +42,12 @@ def ordered_sequential_search(a_list, item):
             else:
                 pos = pos + 1
 
-    return found
+    stop = time.time()
+    return found, stop - start
 
 
 def binary_search_iterative(a_list,item):
+    start = time.time()
     first = 0
 
     last = len(a_list) - 1
@@ -57,16 +62,22 @@ def binary_search_iterative(a_list,item):
             else:
                 first = midpoint + 1
 
-    return found
+    stop = time.time()
+    return found, stop - start
     
     
-def binary_search_recursive(a_list,item):
+def binary_search_recursive(a_list,item, start = None):
+    if start is None:
+        start = time.time()
+
     if len(a_list) == 0:
-        return False
+        stop = time.time()
+        return False,stop - start
     else:
         midpoint = len(a_list) // 2
         if a_list[midpoint] == item:
-            return True
+            stop = time.time()
+            return True, stop - start
         else:
             if item < a_list[midpoint]:
                 return binary_search_recursive(a_list[:midpoint], item)
@@ -74,20 +85,23 @@ def binary_search_recursive(a_list,item):
                 return binary_search_recursive(a_list[midpoint + 1:], item)
 
 
+def time_search(search_algo,name):
+    random_size = [500, 1000, 5000]
+    for limit_size in random_size:
+        t_seq = 0
+        for x in range(100):
+            randomized = get_me_random_list(limit_size)
+            randomized = sorted(randomized)
+            x, single_seq_search = search_algo(randomized, 999999)
+            t_seq += single_seq_search
+
+        avg_seq = t_seq / 100
+        print(f"{name} took {avg_seq:10.7f} seconds to run, on average for {limit_size}")
+
+
 if __name__ == "__main__":
     """Main entry point"""
-    the_size = 500
-
-    total_time = 0
-    for i in range(100):
-        mylist = get_me_random_list(the_size)
-        # sorting is not needed for sequential search.
-        mylist = sorted(mylist)
-
-        start = time.time()
-        check = binary_search_iterative(mylist, 99999999)
-        time_spent = time.time() - start
-        total_time += time_spent
-
-    avg_time = total_time / 100
-    print(f"Binary Search Iterative took {avg_time:10.7f} seconds to run, on average for a list of {the_size} elements")
+    time_search(sequential_search, "Sequential search")
+    time_search(ordered_sequential_search,"Ordered Sequential search")
+    time_search(binary_search_iterative, "Binary search iterative")
+    time_search(binary_search_recursive, "Binary search recursive")
