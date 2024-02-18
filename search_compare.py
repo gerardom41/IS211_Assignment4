@@ -14,7 +14,6 @@ def get_me_random_list(n):
 
 
 def sequential_search(a_list, item):
-    start = time.time()
     pos = 0
     found = False
 
@@ -24,12 +23,10 @@ def sequential_search(a_list, item):
         else:
             pos = pos + 1
 
-    stop = time.time()
-    return found, stop - start
+    return found
 
 
 def ordered_sequential_search(a_list, item):
-    start = time.time()
     pos = 0
     found = False
     stop = False
@@ -42,12 +39,10 @@ def ordered_sequential_search(a_list, item):
             else:
                 pos = pos + 1
 
-    stop = time.time()
-    return found, stop - start
+    return found
 
 
 def binary_search_iterative(a_list,item):
-    start = time.time()
     first = 0
 
     last = len(a_list) - 1
@@ -62,22 +57,17 @@ def binary_search_iterative(a_list,item):
             else:
                 first = midpoint + 1
 
-    stop = time.time()
-    return found, stop - start
+    return found
     
     
-def binary_search_recursive(a_list,item, start = None):
-    if start is None:
-        start = time.time()
+def binary_search_recursive(a_list,item):
 
     if len(a_list) == 0:
-        stop = time.time()
-        return False,stop - start
+        return False
     else:
         midpoint = len(a_list) // 2
         if a_list[midpoint] == item:
-            stop = time.time()
-            return True, stop - start
+            return True
         else:
             if item < a_list[midpoint]:
                 return binary_search_recursive(a_list[:midpoint], item)
@@ -87,13 +77,18 @@ def binary_search_recursive(a_list,item, start = None):
 
 def time_search(search_algo,name):
     random_size = [500, 1000, 5000]
+
     for limit_size in random_size:
         t_seq = 0
         for x in range(100):
             randomized = get_me_random_list(limit_size)
             randomized = sorted(randomized)
-            x, single_seq_search = search_algo(randomized, 999999)
-            t_seq += single_seq_search
+            
+            start = time.time()
+            search_algo(randomized, 999999)
+            time_diff = time.time() - start
+
+            t_seq += time_diff
 
         avg_seq = t_seq / 100
         print(f"{name} took {avg_seq:10.7f} seconds to run, on average for {limit_size}")
